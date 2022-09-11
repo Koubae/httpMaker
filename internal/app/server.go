@@ -2,10 +2,11 @@ package server
 
 import (
 	"github.com/Koubae/httpMaker/internal/app/config"
+	appHttp "github.com/Koubae/httpMaker/internal/app/http"
+	httpErrors "github.com/Koubae/httpMaker/internal/app/http/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"log"
-	"net/http"
 	"os"
 )
 
@@ -35,11 +36,13 @@ func Start() {
 	app.Use(config.LoggerWithFormatter())
 	app.Use(gin.Recovery())
 
-	app.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"title": "Main Websiste",
-		})
-	})
+	// Set-up Error-Handler Middlewares
+	httpErrors.ErrorHandler404(app)
+	httpErrors.ErrorHandler405(app)
+	httpErrors.ErrorHandlerCatchAll(app)
+
+	// Set-up routes (Controllers - Api-Resources)
+	appHttp.Router(app)
 
 	log.Printf("/!| App  %s Running /!| Listening and Serving at 0.0.0.0:%s", appName, port)
 	err := app.Run(":" + port)
