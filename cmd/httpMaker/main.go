@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	server.Start() // todo: add error handler!
+	server.Start()
 }
 
 func init() {

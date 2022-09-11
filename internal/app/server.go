@@ -9,11 +9,19 @@ import (
 	"os"
 )
 
-func Start() { // Todo: wrap the all initial config and return error in main if something happens!
+func Start() {
 	var appName = os.Getenv("APP_NAME")
 	if appName == "" {
 		appName = config.AppNameDefault
 	}
+	// ------------------------ < Error Handler > -------------------- \\
+	defer func() {
+		log.Printf("%s Shutting Down...", appName)
+		if revived := recover(); revived != nil {
+			log.Fatalf("%s Panicked: %+v\n", appName, revived)
+		}
+	}()
+	// ------------------------ < !!!!!!!!!!!!!! > -------------------- \\
 
 	port := os.Getenv("APP_PORT")
 	if port == "" {
